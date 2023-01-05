@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13.9-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${SQL_USER}
+      POSTGRES_PASSWORD: ${SQL_PASSWORD}
+      POSTGRES_DB: ${SQL_DATABASE}
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  web:
+    build: .
+    env_file:
+      - .env
+    container_name: django
+    restart: always
+    #    command: >
+    #      sh -c "python manage.py makemigrations && python manage.py migrate && gunicorn ssafbox.wsgi:application --bind 0.0.0.0:8000"
+    command: gunicorn ssafbox.wsgi:application --bind 0.0.0.0:8000 --workers=${WORKERS} --reload
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/usr/src/app
+volumes:
+  postgres-volume:

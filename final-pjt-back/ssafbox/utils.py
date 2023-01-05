@@ -1,0 +1,2 @@
+# 자리 선점 최대 시간
+SEAT_OCCUPY_TIME_LIMIT = 500
